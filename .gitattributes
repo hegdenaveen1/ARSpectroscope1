@@ -1,0 +1,7 @@
+. filter=lfs diff=lfs merge=lfs -text
+Assets/** filter=lfs diff=lfs merge=lfs -text
+Library/** filter=lfs diff=lfs merge=lfs -text
+Logs/** filter=lfs diff=lfs merge=lfs -text
+Packages/** filter=lfs diff=lfs merge=lfs -text
+ProjectSettings/** filter=lfs diff=lfs merge=lfs -text
+Temp/** filter=lfs diff=lfs merge=lfs -text
