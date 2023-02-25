@@ -1,0 +1,72 @@
+import UIKit
+import AVFoundation
+
+class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDelegate {
+    
+    var captureSession: AVCaptureSession!
+    var previewLayer: AVCaptureVideoPreviewLayer!
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        captureSession = AVCaptureSession()
+        captureSession.sessionPreset = .photo
+        
+        guard let captureDevice = AVCaptureDevice.default(for: .video) else { return }
+        
+        do {
+            let input = try AVCaptureDeviceInput(device: captureDevice)
+            captureSession.addInput(input)
+            
+            previewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
+            previewLayer.frame = view.frame
+            previewLayer.videoGravity = .resizeAspectFill
+            view.layer.addSublayer(previewLayer)
+            
+            let output = AVCaptureVideoDataOutput()
+            output.setSampleBufferDelegate(self, queue: DispatchQueue(label: "videoQueue"))
+            captureSession.addOutput(output)
+            
+            captureSession.startRunning()
+        } catch let error {
+            print("Error Unable to initialize the camera: \(error.localizedDescription)")
+        }
+    }
+    
+    func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
+       
+    }
+    
+    
+}
+import ARKit
+
+class ViewController: UIViewController, ARSCNViewDelegate {
+
+    @IBOutlet var sceneView: ARSCNView!
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        sceneView.delegate = self
+
+        let configuration = ARWorldTrackingConfiguration()
+        sceneView.session.run(configuration)
+    }
+
+    func renderer(_ renderer: SCNSceneRenderer, didAdd node: SCNNode, for anchor: ARAnchor) {
+        if let planeAnchor = anchor as? ARPlaneAnchor {
+            let plane = SCNPlane(width: CGFloat(planeAnchor.extent.x), height: CGFloat(planeAnchor.extent.z))
+            let planeNode = SCNNode(geometry: plane)
+            planeNode.eulerAngles.x = -.pi / 2
+            planeNode.opacity = 0.25
+            node.addChildNode(planeNode)
+        } else {
+            let sphere = SCNSphere(radius: 0.05)
+            let sphereNode = SCNNode(geometry: sphere)
+            sphereNode.position.y = 0.05
+            node.addChildNode(sphereNode)
+        }
+    }
+}
+
